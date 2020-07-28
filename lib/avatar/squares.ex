@@ -1,4 +1,11 @@
 defmodule Avatar.Squares do
+  @moduledoc """
+  Generates identicons similar to Github-style identicons.
+
+  Each Pixel is a flat colour square, the generated image is
+  mirrored along the center row for odd sizes, between the
+  center two rows for even sizes.
+  """
   def build_image(%Avatar{} = avatar) do
     img = scene(avatar.config)
 
@@ -6,7 +13,11 @@ defmodule Avatar.Squares do
     <<_, _, _, a, b, c, _::binary>> = avatar.hash
     :rand.seed(:exsplus, {a, b, c})
 
-    for index <- avatar.pixels do
+    pixels =
+      avatar.pixels
+      |> Enum.take(avatar.config[:columns] * avatar.config[:rows])
+
+    for {true, index} <- pixels do
       color =
         if avatar.config[:monochrome] do
           avatar.color
